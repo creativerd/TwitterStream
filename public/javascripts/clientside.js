@@ -1,0 +1,166 @@
+var waitingQueue = [];
+var renderQueue = [];
+var tweetCounter = 0;
+var maxTweet = 6;
+var arrayPointer = 0;
+var resetCounter = 0;
+var delay =8000;
+var i = 1;
+
+
+var socket = io.connect();
+socket.on('init',function(msg){
+  alert(msg.msg);
+  console.log("connected");
+});
+
+var socket = io.connect(window.location.hostname);
+socket.on('load', function (data) {
+    socket.emit('clientside event', { my: 'data' });
+});
+socket.on('tweet', function (data) {
+    var tweet = data;
+    
+    incomingTweetController(tweet)    
+});
+  
+function incomingTweetController(tweet) {
+            //add tweet to waiting queue
+            //if reneder queue is < 3 add it
+            addToList(waitingQueue, renderQueue, tweet);
+
+            tweetCounter++;
+            if(tweetCounter === maxTweet) {
+                setInterval( 
+                    function() {
+                    console.log("Total Tweets= " + tweetCounter);
+
+                    rotateTweet(renderQueue);
+                    
+                    removeTweetFromArray(waitingQueue, renderQueue);
+
+                }, delay);
+            }
+        };
+
+
+function rotateTweet(renderArray) {
+  //var length = $('.tweet').length;
+    //console.log(length);
+    var length = $('.tweet').length;
+    var rowDate = renderArray[arrayPointer].created_at;
+    var cleanDate = rowDate.substring(0, rowDate.lastIndexOf('+'));
+    var tweet = '<li class="tweet future fly-simplified-li"><div>' 
+        + '<h2>' + renderArray[arrayPointer].user.name + '</h2>' 
+        + '<p>' + renderArray[arrayPointer].text + '</p>' 
+        + '<h3>&#64;' + renderArray[arrayPointer].user.screen_name + '<span>' + cleanDate + '</span></h3>'
+        + '</div></li>';
+
+    $(tweet).appendTo('.tweetHolder').show().toggleClass('future');
+    if ( length === 3 ) {
+        $('.tweet').first().toggleClass('fly-simplified-li').animate({
+        height: "0px", margin: "0px", opacity: '0'
+        },1600, function () {
+          $(this).remove();
+          console.log('end callback')
+        });
+    } 
+    
+    console.log('ROTATE TWT')
+    
+    
+    
+    
+    
+    if(arrayPointer === renderArray.length - 1) {
+      arrayPointer = 0;
+    } else {
+      arrayPointer++;
+    }
+};
+
+/*
+var rotateTweetZ = function(input){
+ var length = $('.tweet').length;
+ var tweet = '<li class="tweet future fly-simplified-li"><div>' +
+input + '</div></li>';
+ //$(tweet).appendTo('.tweetHolder').show().animate({maxHeight:'180px'}, 900);
+ $(tweet).appendTo('.tweetHolder').show().toggleClass('future');
+
+ //$('ul').append('<li class="tweet">this</li>');
+ //var bar = $('ul').length;
+ //console.log(bar);
+ if ( length === 3 ) {
+   $('.tweet').first().toggleClass('fly-simplified-li').animate({
+    height: "0px", margin: "0px", opacity: '0'
+   }, 900, function () {
+     $(this).remove()
+   });
+   //.addClass('flipOutX animate')
+ }
+ */
+
+
+function addToList(queueArray, renderArray, item) {
+            //add tweet to waiting queue
+            //add tweet to render queue if smaller than 10
+            if(renderArray.length < maxTweet) {
+                renderArray.push(item);
+                console.log("PUSHING");
+            } else {
+                queueArray.push(item);
+            }
+        }
+
+function removeTweetFromArray(queueArray, renderArray) {
+    if(renderArray.length === maxTweet && queueArray.length > 0) {
+    //console.log("render array is full. Replacing old tweet");
+
+        for(var i = 0; i < 1; i++) {
+            if(arrayPointer > 0) {
+                arrayPointer--;
+            } else {
+                arrayPointer = maxTweet - 1;
+            }
+            var tweetToAdd = queueArray.shift();
+            renderArray.splice(0, 1);
+            renderArray.push(tweetToAdd);
+        }
+    } 
+}
+
+function displayTweets(queueArray, renderArray ) {
+
+            var rowDate = renderArray[arrayPointer].created_at;
+            var cleanDate = rowDate.substring(0, rowDate.lastIndexOf('+'));
+            //var currentTime = new Date(),
+            //    hours = currentTime.getHours(),
+            //    minutes = currentTime.getMinutes();
+
+            if(resetCounter === maxTweet) {
+                removeTweetFromDOM();
+                resetCounter = 0;
+            } else {
+                resetCounter++;
+            }
+                            
+            console.log("displayed tweet count: " + arrayPointer);
+            console.log("array length: " + renderArray.length);
+
+            $('body').append('<div class="tweet"><div class="tweet-name">' + renderArray[arrayPointer].user.name + '</div>' 
+                + '<div class="tweet-text">' + renderArray[arrayPointer].text + '</div>' 
+                + '<div class="tweet-date">' + renderArray[arrayPointer].user.screen_name + ' – ' +cleanDate + '</div>=======================================</div>'); 
+
+            if(arrayPointer === renderArray.length - 1) {
+                arrayPointer = 0; 
+                $('body').append('<br><br>');
+            } else {
+                arrayPointer++;
+            }
+        }
+
+        function removeTweetFromDOM() {
+            $('li').remove();
+        }
+
+

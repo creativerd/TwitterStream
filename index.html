@@ -1,0 +1,37 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style.css"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+    <script>
+var socket = io.connect('localhost:*');
+socket.on('load', function (data) {
+    socket.emit('clientside event', { my: 'data' });
+});
+socket.on('tweet', function (data) {
+    var tweet = data.toString();
+    tweet = "<li>" + tweet + "</li>"
+    $('ul').append(tweet);
+    if ( length === 20 ) {
+      $('ul li:first').remove();
+    }
+    //incomingTweetController(tweet)    
+});
+  
+
+function rotateTweet(tweet) {
+  var length = $('ul').length();
+  var tweet = "<li>" + tweet + "</li>"
+  $('ul').append(tweet);
+  if ( length === 20 ) {
+    $('ul li:first').remove();
+  }
+};
+    </script>
+</head>
+<body>
+    <ul>
+      <li>Tweet List</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,49 @@
+
+
+
+socket.on('tweet', function (data) {
+    var tweet = data.toString();
+    incomingTweetController(tweet)
+  });
+  
+  
+  
+var listQueue  = [ "tweet", "tweet" ]  
+  , listRender = []
+  , displayCount = 0;
+  
+
+var Tweet = function(json, count) 
+              this.content = json
+              this.number  = count =+
+              this.display = function()
+                return "now tweeting" + this.content
+              this.unique  = function()
+                return "this is tweet number" + this.number
+              
+incomingTweetController(tweet, displayCount)
+  tweet = new Tweet(tweet, displayCount)
+  if (listRender.length === 20)    
+    listQueue.push(tweet)
+  else 
+    listRender.push(tweet)
+    
+    
+outgoingTweet(tweet) every 5 seconds
+  rotateTweet() 
+  if (listQueue != 0)  
+    
+  else if (
+    
+      
+      
+
+
+
+rotateTweet()
+  // Add tweet to DOM as li:last
+  // Animate upwards and 
+  // Remove li:first
+      
+      
+
