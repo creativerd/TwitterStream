@@ -23,7 +23,7 @@ app.get('/',function(req,res){  // route controller for index
 io.on('connection',function (socket) {
     socket.emit('load', 'connection made');
     socket.on('clientside event', function (data) {
-      var hashtag = ['#MODUSAW14','#beautiful-future'];
+      var hashtag = ['#MODUSAW14','#beautiful-future', '#fashion'];
       var tweeter = function(input) {
         socket.emit('tweet', input);
       }
